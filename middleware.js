@@ -1,21 +1,27 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
+import { cookies } from 'next/headers';
+import { jwtVerify } from 'jose';
 
-export function middleware(req) {
+export async function middleware(req) {
   try {
     // ✅ Use the exact same cookie name as in login API
-    const token = req.cookies.get("authToken")?.value;
+
+    const cookieStore = await cookies();
+    const token = cookieStore.get('authToken')?.value;
 
     if (!token) {
+      console.log("No token found in middleware, redirecting to login");
       return NextResponse.redirect(new URL("/login", req.url));
     }
 
-    // Verify token
-    jwt.verify(token, process.env.JWT_SECRET || "supersecretkey123456");
+    // Verify token using jose (Edge compatible)
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET || "supersecretkey123456");
+    await jwtVerify(token, secret);
 
     return NextResponse.next();
   } catch (error) {
     // Invalid or expired token
+    console.log("Invalid or expired token", error);
     return NextResponse.redirect(new URL("/login", req.url));
   }
 }
