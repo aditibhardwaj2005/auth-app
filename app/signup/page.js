@@ -6,11 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { useRouter } from 'next/navigation';
 
 export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleSignup = async () => {
     try {
@@ -21,6 +23,7 @@ export default function Signup() {
       });
 
       alert(res.data.message);
+      router.push('/login');
     } catch (error) {
       alert(error.response?.data?.message || "Error");
     }

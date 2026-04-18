@@ -42,7 +42,8 @@ export async function POST(request) {
     );
 
     // Set cookie
-    cookies().set('authToken', token, {
+    const cookieStore = await cookies();
+    cookieStore.set('authToken', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
